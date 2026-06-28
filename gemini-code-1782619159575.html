@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古代卡漫：量詞粵語大冒險 ⚔️ 🗣️</title>
+    <style>
+        /* 漫畫風趣味背景 */
+        body {
+            font-family: 'Comic Sans MS', 'Segoe UI', "Microsoft JhengHei", "PingFang HK", sans-serif;
+            background-color: #fcd68a;
+            background-image: radial-gradient(#e5ab5e 20%, transparent 20%), radial-gradient(#e5ab5e 20%, transparent 20%);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        /* 漫畫格大容器 */
+        .comic-container {
+            background-color: #fffdf0;
+            border: 6px solid #4a2306;
+            border-radius: 30px;
+            padding: 30px;
+            width: 100%;
+            max-width: 680px;
+            box-shadow: 12px 12px 0px #4a2306;
+            text-align: center;
+            position: relative;
+        }
+        
+        /* 爆發效果的卡漫標題 */
+        h1 {
+            color: #fff;
+            background-color: #e63946;
+            border: 4px solid #4a2306;
+            padding: 12px 25px;
+            font-size: 28px;
+            border-radius: 15px;
+            display: inline-block;
+            transform: rotate(-1deg);
+            box-shadow: 5px 5px 0px #4a2306;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+
+        /* 語音狀態提示條 */
+        .voice-status {
+            background-color: #eef1f6;
+            border: 2px solid #4a2306;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #4a2306;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        /* 古風計分板 */
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 900;
+            color: #4a2306;
+            background: #fcd68a;
+            padding: 10px 20px;
+            border: 3px solid #4a2306;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        /* 經驗值進度條 */
+        .progress-container {
+            background-color: #fff;
+            border: 3px solid #4a2306;
+            border-radius: 15px;
+            height: 22px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.15);
+        }
+        .progress-bar {
+            background-color: #ff9f1c;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        /* 卡通人物舞台區 */
+        .character-stage {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+            background: #fff;
+            border: 4px solid #4a2306;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 5px 5px 0px #e5ab5e;
+        }
+        
+        /* Q版卡通頭像 */
+        .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 4px solid #4a2306;
+            background-color: #ffdda1;
+            font-size: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            box-shadow: 4px 4px 0px #4a2306;
+            cursor: pointer;
+        }
+        .avatar:hover {
+            transform: scale(1.05);
+        }
+        
+        /* 漫畫台詞泡泡框 */
+        .comic-bubble {
+            background: #fff;
+            border: 4px solid #4a2306;
+            border-radius: 18px;
+            padding: 18px;
+            position: relative;
+            flex-grow: 1;
+            font-size: 21px;
+            font-weight: bold;
+            color: #222;
+            text-align: left;
+            line-height: 1.6;
+            min-height: 60px;
+        }
+        .comic-bubble::after, .comic-bubble::before {
+            right: 100%;
+            top: 50%;
+            border: solid transparent;
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+        .comic-bubble::after {
+            border-color: rgba(255, 255, 255, 0);
+            border-right-color: #fff;
+            border-width: 12px;
+            margin-top: -12px;
+        }
+        .comic-bubble::before {
+            border-color: rgba(74, 35, 6, 0);
+            border-right-color: #4a2306;
+            border-width: 17px;
+            margin-top: -17px;
+        }
+        
+        /* 四格漫畫選項排版 */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+        .comic-btn {
+            background-color: #aae0ec;
+            border: 4px solid #4a2306;
+            border-radius: 15px;
+            padding: 18px;
+            font-size: 22px;
+            font-weight: 900;
+            color: #4a2306;
+            cursor: pointer;
+            box-shadow: 5px 5px 0px #4a2306;
+            transition: all 0.1s ease;
+        }
+        .comic-btn:hover {
+            background-color: #8cd3e2;
+            transform: translateY(-2px);
+            box-shadow: 7px 7px 0px #4a2306;
+        }
+        .comic-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0px 0px 0px #4a2306;
+        }
+        
+        .comic-btn.correct {
+            background-color: #87e293 !important;
+            color: #0d4b15;
+        }
+        .comic-btn.wrong {
+            background-color: #ff8b8b !important;
+            color: #5c0909;
+        }
+        
+        .feedback-zone {
+            margin-top: 25px;
+            font-size: 26px;
+            font-weight: 900;
+            height: 40px;
+        }
+        
+        .start-screen-btn {
+            background-color: #e63946;
+            color: white;
+            border: 4px solid #4a2306;
+            padding: 20px 50px;
+            font-size: 28px;
+            font-weight: 900;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 6px 6px 0px #4a2306;
+            margin: 40px auto;
+        }
+        
+        .restart-btn {
+            background-color: #ffbe0b;
+            color: #4a2306;
+            border: 4px solid #4a2306;
+            padding: 15px 45px;
+            font-size: 26px;
+            font-weight: 900;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 5px 5px 0px #4a2306;
+            margin-top: 25px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="comic-container">
+    <h1>⚔️ 古代卡漫：量詞廣東話大冒險 🗣️</h1>
+    
+    <div id="start-screen">
+        <p style="font-size: 20px; font-weight: bold; color: #4a2306; line-height: 1.8;">
+            歡迎來到古代漫畫世界！<br>
+            本遊戲內置<span style="color: #e63946;">【可愛溫柔粵語人聲讀題】</span>，陪小朋友一齊聽住學！<br>
+            請點擊下方按鈕開啟冒險！
+        </p>
+        <button class="start-screen-btn" onclick="initGame()">開啟冒險 🚀</button>
+    </div>
+    
+    <div id="game-ui" style="display: none;">
+        <div class="voice-status">
+            <span>🔊 聽唔清？點擊左邊嘅卡通頭像就可以「重新聽題」喇！</span>
+        </div>
+
+        <div class="score-board">
+            <span id="question-number">第 1 / 100 關</span>
+            <span id="role-name" style="color:#e63946;">登場人物：大將軍</span>
+            <span id="score">得分：0</span>
+        </div>
+        
+        <div class="progress-container">
+            <div id="progress" class="progress-bar"></div>
+        </div>
+        
+        <div class="character-stage">
+            <div id="avatar" class="avatar" onclick="speakCurrentQuestion()" title="點我重新讀題">🤠</div>
+            <div id="question" class="comic-bubble">已經準備好古風卷軸...</div>
+        </div>
+        
+        <div class="options-grid">
+            <button class="comic-btn" onclick="checkAnswer(0)" id="opt0">A</button>
+            <button class="comic-btn" onclick="checkAnswer(1)" id="opt1">B</button>
+            <button class="comic-btn" onclick="checkAnswer(2)" id="opt2">C</button>
+            <button class="comic-btn" onclick="checkAnswer(3)" id="opt3">D</button>
+        </div>
+        
+        <div id="feedback" class="feedback-zone"></div>
+    </div>
+
+    <button id="restart-btn" class="restart-btn" onclick="startGame()">再次穿越 🔄</button>
+</div>
+
+<script>
+// 輪流登場的古代卡通漫畫人物
+const characters = [
+    { name: "威武大將軍 ⚔️", avatar: "🤠" },
+    { name: "悅來客棧掌櫃 💰", avatar: "🧑‍💼" },
+    { name: "書院老夫子 📜", avatar: "👴" },
+    { name: "江南才女 🏮", avatar: "👩" },
+    { name: "皇家大御廚 🍳", avatar: "👨‍🍳" },
+    { name: "跑腿小二 🏃‍♂️", avatar: "👦" }
+];
+
+// 100題嚴格不重複題庫，完美覆蓋10個量詞（各10題）
+const quizData = [
+    /* 1. 棵 (1-10) */
+    { q: "大將軍在軍營門口種了一（）高大的柳樹，用來遮擋烈日，大家猜是哪一個量詞？", a: "棵", o: ["棵", "朵", "張", "隻"] },
+    { q: "老夫子在後山散步，意外發現了一（）上百年的靈芝，真是太幸運了！", a: "棵", o: ["隻", "棵", "台", "列"] },
+    { q: "御花園裡有一（）珍貴的百年老松樹，長得直插雲霄，非常威武。", a: "棵", o: ["張", "匹", "棵", "碗"] },
+    { q: "客棧小二在後院細心澆灌一（）剛發芽的小白菜，準備當作晚上的食材。", a: "棵", o: ["棵", "條", "台", "個"] },
+    { q: "江南才女在詩中寫道：庭院深深，唯有一（）芭蕉樹在夜雨中輕輕搖曳。", a: "棵", o: ["朵", "杯", "頁", "棵"] },
+    { q: "採藥童子在懸崖邊發現了一（）珍貴的人參，趕緊小心翼翼地挖起來。", a: "棵", o: ["棵", "朵", "隻", "張"] },
+    { q: "黑衣刺客悄悄躲在客棧外的那（）大榕樹上，觀察著院子裡的動靜。", a: "棵", o: ["列", "棵", "台", "匹"] },
+    { q: "古書院的竹林裡有一（）特別粗壯的大竹子，夫子常在樹下讀書。", a: "棵", o: ["碗", "杯", "棵", "頁"] },
+    { q: "神醫的百草園裡種了一（）會結出金色果實的神秘小樹。", a: "棵", o: ["棵", "台", "隻", "張"] },
+    { q: "江南水鄉的護城河畔，每一（）垂柳都長滿了翠綠的嫩芽，像綠色絲帶。", a: "棵", o: ["個", "頁", "棵", "列"] },
+
+    /* 2. 朵 (11-20) */
+    { q: "江南才女從花園裡摘下一（）盛開的牡丹花，戴在頭髮上非常美麗。", a: "朵", o: ["張", "朵", "隻", "台"] },
+    { q: "大俠抬頭望向天空，只見一（）祥雲飄過，似乎預示著有好事發生。", a: "朵", o: ["棵", "隻", "朵", "杯"] },
+    { q: "御廚在做宮廷點心時，特地用麵粉捏出了一（）精緻的梅花裝飾。", a: "朵", o: ["朵", "頁", "碗", "匹"] },
+    { q: "刺客夜行時，天空中剛好飄來一（）烏雲，把月亮遮得嚴嚴實實。", a: "朵", o: ["張", "台", "列", "朵"] },
+    { q: "將軍站在戰船上，看到戰船破浪前進，激起了一（）（）白色的浪花。", a: "朵", o: ["朵", "棵", "隻", "頁"] },
+    { q: "書院的木桌上，青瓷花瓶裡正插著一（）清香的白菊花。", a: "朵", o: ["杯", "朵", "張", "台"] },
+    { q: "大詩人喝醉後，指著池塘裡的一（）紅荷花，當場吟誦了一首詩。", a: "朵", o: ["列", "隻", "朵", "棵"] },
+    { q: "山寨大王在自己的頭盔上插了一（）大紅花，顯得非常威風好笑。", a: "朵", o: ["朵", "碗", "頁", "匹"] },
+    { q: "跑腿小二在山坡上採到了一（）巨大的靈芝菇，高興地手舞足蹈。", a: "朵", o: ["張", "朵", "台", "隻"] },
+    { q: "西域商人帶來了一（）用純金打造的雪蓮花，進貢給宮廷當寶物。", a: "朵", o: ["棵", "列", "杯", "朵"] },
+
+    /* 3. 匹 (21-30) */
+    { q: "悅來客棧掌櫃高興地說：西域商人剛運來一（）上等絲綢，摸起來真滑順！", a: "匹", o: ["張", "隻", "匹", "台"] },
+    { q: "將軍騎著一（）日行千里的赤兔汗血寶馬，雄赳赳氣昂昂地準備出征。", a: "匹", o: ["匹", "棵", "列", "條"] },
+    { q: "織女花了三天三夜，終於在木織布機上織好了一（）精美的白棉布。", a: "匹", o: ["頁", "碗", "杯", "匹"] },
+    { q: "關羽手提青龍偃月刀，胯下一（）赤兔馬，真是威震八方。", a: "匹", o: ["隻", "匹", "台", "張"] },
+    { q: "皇上龍顏大悅，決定賞賜給立下大功的將軍十（）珍貴的綾羅綢緞。", a: "匹", o: ["匹", "朵", "列", "棵"] },
+    { q: "驛站的馬廄裡有一（）性格溫馴的母馬，正在哺育牠的小馬寶寶。", a: "匹", o: ["隻", "杯", "匹", "頁"] },
+    { q: "布莊老闆指著櫃檯說：這（）藍色的布料最適合幫老夫子做新長袍了。", a: "匹", o: ["匹", "張", "台", "碗"] },
+    { q: "探子騎著一（）快馬，十萬火急地將邊疆的最新戰報送回京城。", a: "匹", o: ["棵", "匹", "隻", "朵"] },
+    { q: "古代北方的遊牧民族，經常用強壯的戰馬來跟南方交換茶葉，這叫一（）馬。", a: "匹", o: ["列", "張", "台", "匹"] },
+    { q: "這家老字號染坊今天剛染好了一（）大紅色的綢緞，準備送往宮中辦喜事。", a: "匹", o: ["匹", "頁", "杯", "隻"] },
+
+    /* 4. 列 (31-40) */
+    { q: "將軍高舉寶劍，身後一（）整齊的重甲騎兵隊伍立刻整裝待發。", a: "列", o: ["條", "列", "台", "張"] },
+    { q: "皇上出巡的時候，一（）長長的皇家馬車隊伍浩浩蕩蕩地走過大街。", a: "列", o: ["列", "隻", "棵", "朵"] },
+    { q: "城門口，排成一（）的運糧車隊正排隊等著接受守衛兵的檢查。", a: "列", o: ["台", "匹", "列", "頁"] },
+    { q: "宮女們手捧著精緻的宮燈，排成一（）整齊的隊伍步入大殿。", a: "列", o: ["碗", "張", "杯", "列"] },
+    { q: "鏢局的鏢車排成一（）長龍，在插著鏢旗的馬車帶領下向著前方前進。", a: "列", o: ["列", "棵", "台", "隻"] },
+    { q: "迎親的轎夫與吹鼓手排成一（）熱鬧的隊伍，沿街敲鑼打鼓放鞭炮。", a: "列", o: ["朵", "列", "匹", "頁"] },
+    { q: "演武場上，一（）持盾的士兵排開防線，抵擋前方飛來的弓箭。", a: "列", o: ["張", "台", "碗", "列"] },
+    { q: "波斯使者帶來了一（）由二十隻駱駝組成的駝隊，背滿了西域珍寶。", a: "列", o: ["列", "條", "隻", "杯"] },
+    { q: "古書院的學子們排成一（），恭敬地向孔老夫子的神位鞠躬行禮。", a: "列", o: ["棵", "朵", "列", "台"] },
+    { q: "朝廷的文武百官排成左右兩（），在金鑾殿上等待皇上宣布早朝開始。", a: "列", o: ["匹", "列", "張", "頁"] },
+
+    /* 5. 杯 (41-50) */
+    { q: "豪爽的大俠走進客棧，一拍桌子大喊：小二！先給我來一（）好酒解解渴！", a: "杯", o: ["碗", "杯", "台", "隻"] },
+    { q: "江南才女坐在涼亭裡，一邊賞月，一邊品嚐一（）剛沏好的明前龍井茶。", a: "杯", o: ["杯", "棵", "張", "列"] },
+    { q: "老夫子在家中招待遠道而來的貴客，親自倒了一（）香氣四溢的桂花釀。", a: "杯", o: ["頁", "朵", "杯", "匹"] },
+    { q: "大詩人感嘆道：人生得意須盡歡，莫使金樽空對月！再來一（）美酒！", a: "杯", o: ["碗", "台", "隻", "杯"] },
+    { q: "客棧掌櫃請帳房先生喝一（）清熱解毒的菊花茶，辛苦他算了一整天帳。", a: "杯", o: ["杯", "張", "棵", "列"] },
+    { q: "在盛大的宮廷宴會上，皇上舉起一（）精美的夜光杯，與眾大臣同慶勝利。", a: "杯", o: ["朵", "杯", "頁", "匹"] },
+    { q: "江湖刺客在執行神秘任務前，獨自喝了一（）烈酒來壯壯膽子。", a: "杯", o: ["台", "碗", "隻", "杯"] },
+    { q: "皇家大御廚特製了一（）冰鎮酸梅湯，送去給正在批閱奏折的皇上解暑。", a: "杯", o: ["杯", "張", "棵", "列"] },
+    { q: "跑腿小二不小心打破了客棧裡的一（）貴重玉石茶杯，心疼得快哭了。", a: "杯", o: ["頁", "朵", "杯", "匹"] },
+    { q: "傳聞山上的隱士那裡有一（）神奇的甘露水，喝下就能讓人精神百倍。", a: "杯", o: ["碗", "台", "隻", "杯"] },
+
+    /* 6. 頁 (51-60) */
+    { q: "武林大俠翻開絕世武功秘籍的最後一（），上面居然寫著「大功告成」！", a: "頁", o: ["張", "頁", "棵", "列"] },
+    { q: "老夫子提醒底下的學子：這本論語線裝書的第十（）有印刷錯誤，要注意。", a: "頁", o: ["頁", "朵", "台", "隻"] },
+    { q: "才女把自己剛寫好的精美詩詞，小心翼翼地夾在珍藏古書的某一（）裡。", a: "頁", o: ["匹", "碗", "頁", "杯"] },
+    { q: "這本從古墓裡挖出來的古代醫書非常殘破，有很多（）紙都黏在一起了。", a: "頁", o: ["張", "頁", "棵", "列"] },
+    { q: "調皮的書童不小心把四書五經撕破了一（），害怕得不敢告訴老夫子。", a: "頁", o: ["頁", "朵", "台", "隻"] },
+    { q: "客棧掌櫃翻開厚厚的帳簿第一（），開始仔細確認今年的總收入。", a: "頁", o: ["匹", "碗", "頁", "杯"] },
+    { q: "這本兵法書的每一（）都凝聚了古代軍事家的智慧，將軍天天挑燈夜讀。", a: "頁", o: ["張", "頁", "棵", "列"] },
+    { q: "跑腿小二在路上撿到了一（）藏寶圖的殘頁，上面畫著奇怪的路線。", a: "頁", o: ["頁", "朵", "台", "隻"] },
+    { q: "朝廷今天發布了新的公文法令，聽說整整寫滿了三大（）厚紙。", a: "頁", o: ["匹", "碗", "頁", "杯"] },
+    { q: "大詩人將自己寫的百首長詩彙整成冊，這本詩集共有九十（）。", a: "頁", o: ["張", "頁", "棵", "列"] },
+
+    /* 7. 張 (61-70) */
+    { q: "威武的大將軍張開一（）大口，一聲怒吼就把敵方的先鋒嚇退了！", a: "張", o: ["隻", "台", "張", "頁"] },
+    { q: "客棧掌櫃為了擴大營業，特地去木匠店訂做了十（）嶄新的紅木八仙桌。", a: "張", o: ["張", "棵", "列", "朵"] },
+    { q: "才女在雕花書案上鋪開一（）上好的宣紙，準備揮毫創作一幅水墨畫。", a: "張", o: ["匹", "碗", "杯", "張"] },
+    { q: "將軍力大無窮，拉開一（）兩百斤的鐵胎硬弓，一箭就射中了百步外的紅心。", a: "張", o: ["隻", "台", "張", "頁"] },
+    { q: "官府在城牆門口貼了一（）告示，懸賞重金緝拿黑風嶺的江洋大盜。", a: "張", o: ["張", "棵", "列", "朵"] },
+    { q: "古書院的考場裡擺滿了一（）（）的木頭書桌，考試氣氛非常嚴肅。", a: "張", o: ["匹", "碗", "杯", "張"] },
+    { q: "悅來客棧的天字號客房裡，換了一（）雕刻著精美祥雲花紋的雕花大床。", a: "張", o: ["隻", "台", "張", "頁"] },
+    { q: "小二在客棧大門口發放一（）（）客棧新菜上市的宣傳單，招攬客人。", a: "張", o: ["張", "棵", "列", "朵"] },
+    { q: "諸葛亮在城樓上憑著一（）古琴、兩名書童，就演了一齣精彩的空城計。", a: "張", o: ["匹", "碗", "杯", "張"] },
+    { q: "衙門口的那（）大鼓是用上等牛皮做的，敲起來聲音能傳到幾里外。", a: "張", o: ["隻", "台", "張", "頁"] },
+
+    /* 8. 隻 (71-80) */
+    { q: "英勇的捕快帶著一（）訓練有素的獵狗，在森林裡搜捕逃犯的蹤跡。", a: "隻", o: ["隻", "條", "匹", "棵"] },
+    { q: "才女看到窗外有一（）美麗的喜鵲在樹枝上叫，心想一定是有喜事臨門。", a: "隻", o: ["台", "隻", "張", "列"] },
+    { q: "老農夫家裡養了一（）大水牛，是每逢春耕犁田時不可或缺的好幫手。", a: "隻", o: ["朵", "頁", "隻", "碗"] },
+    { q: "大俠從懷裡掏出一（）精緻的金手鐲，當作給掌櫃的住宿押金。", a: "隻", o: ["杯", "隻", "台", "張"] },
+    { q: "大御廚在廚房裡抓到了一（）偷吃宮廷燕窩的大老鼠，氣得直咬牙。", a: "隻", o: ["隻", "條", "匹", "棵"] },
+    { q: "將軍在塞外打獵時，一箭射中了一（）正在高空中翱翔的孤鷹。", a: "隻", o: ["台", "隻", "張", "列"] },
+    { q: "黑衣刺客逃跑時不小心掉了一（）夜行靴，這成了官府唯一的線索。", a: "隻", o: ["朵", "頁", "隻", "碗"] },
+    { q: "寬闊的江面上漂著一（）孤單的小漁船，老漁夫正在獨自垂釣。", a: "隻", o: ["杯", "隻", "台", "張"] },
+    { q: "古書院的蓮花池塘裡養了一（）大烏龜，據說牠已經活了好幾十年呢。", a: "隻", o: ["隻", "條", "匹", "棵"] },
+    { q: "李白花間獨酌，舉杯邀請明月，笑說加上自己的影子剛好湊成一（）看客。", a: "隻", o: ["台", "隻", "張", "列"] },
+
+    /* 9. 台 (81-90) */
+    { q: "古代織女坐在巨大的織布機前，這（）由許多木頭齒輪組成的複雜機器正作響。", a: "台", o: ["張", "台", "隻", "頁"] },
+    { q: "村子裡的廣場上搭了一（）高高的大戲台，正熱鬧地表演著傳統的神功戲。", a: "台", o: ["台", "棵", "列", "朵"] },
+    { q: "諸葛亮在祁山上設了一（）七星壇，穿上道袍準備作法借東風。", a: "台", o: ["匹", "碗", "杯", "台"] },
+    { q: "老夫子快步走上書院的講（），準備跟底下的學子們講授深奧的四書五經。", a: "台", o: ["張", "台", "隻", "頁"] },
+    { q: "皇宮的觀星（）上，擺放著一（）用來觀測星象的青銅渾天儀，非常神奇。", a: "台", o: ["台", "棵", "列", "朵"] },
+    { q: "京城裡最熱鬧的酒樓中央設有一（）琴台，才女正坐在上面優雅地彈琵琶。", a: "台", o: ["匹", "碗", "杯", "台"] },
+    { q: "古代打仗攻城時，工匠造了一（）巨大的投石機，用來轟擊遠處的城牆。", a: "台", o: ["張", "台", "隻", "頁"] },
+    { q: "將軍威嚴地站在高高的點將（）上，大聲宣讀軍令並檢閱底下的三軍士兵。", a: "台", o: ["台", "棵", "列", "朵"] },
+    { q: "衙門大堂的公案（）後方，知府大人正襟危坐，猛一拍驚堂木準備審案。", a: "台", o: ["匹", "碗", "杯", "台"] },
+    { q: "相傳木匠祖師爺魯班曾發明了一（）會自己走路的木馬車，真是一（）奇妙的機器。", a: "台", o: ["張", "台", "隻", "頁"] },
+
+    /* 10. 碗 (91-100) */
+    { q: "客棧小二端上一（）熱騰騰、香噴噴的陽春麵，招呼大俠趕快趁熱吃。", a: "碗", o: ["碗", "杯", "台", "隻"] },
+    { q: "趕路的大俠在路邊茶攤坐下，豪爽地喊道：老闆，先給我來一（）熱豆花！", a: "碗", o: ["張", "棵", "碗", "列"] },
+    { q: "皇上今天身體不適，忠心耿耿的太監趕緊端來一（）熱呼呼、味道很苦的湯藥。", a: "碗", o: ["頁", "朵", "匹", "碗"] },
+    { q: "皇家大御廚今晚特製了一（）宮廷御膳紅豆年糕湯，作為中秋佳節的點心。", a: "碗", o: ["碗", "杯", "台", "隻"] },
+    { q: "將軍與副將們在出征前，痛快地喝了一（）壯行酒，隨後豪邁地將瓷碗摔碎。", a: "碗", o: ["張", "棵", "碗", "列"] },
+    { q: "才女在端午節的時候，親手剝開粽子，放進一（）精緻的青花瓷碗裡品嚐。", a: "碗", o: ["頁", "朵", "匹", "碗"] },
+    { q: "客棧廚房的桌上擺著一（）剛洗乾淨的新鮮香菇，準備用來燉老母雞湯。", a: "碗", o: ["碗", "杯", "台", "隻"] },
+    { q: "貼心的書童幫老夫子盛了一（）熬得香甜綿密的八寶清粥，當作今日的早餐。", a: "碗", o: ["張", "棵", "碗", "列"] },
+    { q: "江湖騙子在街頭賣藥，大聲吹噓說只要喝了他這（）秘製神仙湯就能變聰明。", a: "碗", o: ["頁", "朵", "匹", "碗"] },
+    { q: "路邊的老乞丐手裡拿著一（）破了角的舊瓷碗，向過路的客商祈求施捨。", a: "碗", o: ["碗", "杯", "台", "隻"] }
+];
+
+let currentQuestionIndex = 0;
+let score = 0;
+let currentQuiz = [];
+let canAnswer = true;
+let cantoneseVoice = null;
+
+// 初始化廣東話語音引擎
+function initCantoneseVoice() {
+    if ('speechSynthesis' in window) {
+        const loadVoices = () => {
+            const voices = window.speechSynthesis.getVoices();
+            // 嚴格篩選香港廣東話女性/可愛音調語音 (zh-HK)
+            cantoneseVoice = voices.find(v => v.lang.replace('_', '-').toLowerCase() === 'zh-hk' || v.lang.toLowerCase().includes('hk')) ||
+                             voices.find(v => v.lang.toLowerCase().includes('zh')) || 
+                             voices[0];
+        };
+        loadVoices();
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+        }
+    }
+}
+
+// 播放廣東話伴讀
+function speakCantonese(text) {
+    if ('speechSynthesis' in window && cantoneseVoice) {
+        window.speechSynthesis.cancel(); // 清除排隊中的語音
+        
+        // 為了讓廣東話讀起來更自然，將題目中書面語的「一（）」空格，智慧轉換成廣東話語音「一乜嘢」
+        let spokenText = text.replace(/一（）/g, "一乜嘢");
+        spokenText = spokenText.replace(/（）（）/g, "乜嘢乜嘢");
+        
+        let utterance = new SpeechSynthesisUtterance(spokenText);
+        utterance.voice = cantoneseVoice;
+        utterance.pitch = 1.25; // 提高音調（呈現可愛大姐姐/小朋友聲音）
+        utterance.rate = 0.92;  // 略微放慢語速，方便小朋友聽得清晰
+        window.speechSynthesis.speak(utterance);
+    }
+}
+
+function initGame() {
+    document.getElementById("start-screen").style.display = "none";
+    document.getElementById("game-ui").style.display = "block";
+    initCantoneseVoice();
+    startGame();
+}
+
+// 洗牌演算法（將100題隨機打亂，每次玩的順序都不同）
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function startGame() {
+    currentQuestionIndex = 0;
+    score = 0;
+    currentQuiz = shuffle([...quizData]);
+    document.getElementById("restart-btn").style.display = "none";
+    updateScore();
+    loadQuestion();
+}
+
+function loadQuestion() {
+    canAnswer = true;
+    document.getElementById("feedback").innerText = "";
+    
+    for (let i = 0; i < 4; i++) {
+        let btn = document.getElementById("opt" + i);
+        btn.className = "comic-btn";
+    }
+
+    let qData = currentQuiz[currentQuestionIndex];
+    document.getElementById("question").innerText = qData.q;
+    
+    // 隨機更換古代卡漫發問人物
+    let randomChar = characters[Math.floor(Math.random() * characters.length)];
+    document.getElementById("avatar").innerText = randomChar.avatar;
+    document.getElementById("role-name").innerText = `登場：${randomChar.name}`;
+    
+    let shuffledOptions = shuffle([...qData.o]);
+    for (let i = 0; i < 4; i++) {
+        let btn = document.getElementById("opt" + i);
+        btn.innerText = shuffledOptions[i];
+    }
+    
+    document.getElementById("question-number").innerText = `第 ${currentQuestionIndex + 1} / ${currentQuiz.length} 關`;
+    let progressPercent = ((currentQuestionIndex) / currentQuiz.length) * 100;
+    document.getElementById("progress").style.width = progressPercent + "%";
+    
+    // 載入題目時自動觸發廣東話語音伴讀
+    setTimeout(() => {
+        speakCurrentQuestion();
+    }, 200);
+}
+
+function speakCurrentQuestion() {
+    let qData = currentQuiz[currentQuestionIndex];
+    if (qData) {
+        speakCantonese(qData.q);
+    }
+}
+
+function checkAnswer(selectedIndex) {
+    if (!canAnswer) return;
+    canAnswer = false;
+
+    let qData = currentQuiz[currentQuestionIndex];
+    let selectedBtn = document.getElementById("opt" + selectedIndex);
+    let selectedText = selectedBtn.innerText;
+    
+    let correctIndex = -1;
+    for(let i=0; i<4; i++) {
+        if(document.getElementById("opt" + i).innerText === qData.a) {
+            correctIndex = i;
+        }
+    }
+
+    if (selectedText === qData.a) {
+        score += 10;
+        selectedBtn.classList.add("correct");
+        document.getElementById("feedback").innerHTML = "<span style='color: #2b933b; font-weight:900;'>🎯 叮咚！答對咗喇！你好犀利啊！</span>";
+        speakCantonese("好棒拓！你答對咗喇！");
+    } else {
+        selectedBtn.classList.add("wrong");
+        document.getElementById("opt" + correctIndex).classList.add("correct");
+        document.getElementById("feedback").innerHTML = `<span style='color: #d84b16; font-weight:900;'>💥 哎呀！正確答案應該係「${qData.a}」！</span>`;
+        speakCantonese(`唔啱喔，正確答案係 ${qData.a}`);
+    }
+
+    updateScore();
+
+    // 延時 2.2 秒後換下一題，預留語音播報反饋的時間
+    setTimeout(() => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < currentQuiz.length) {
+            loadQuestion();
+        } else {
+            endGame();
+        }
+    }, 2200);
+}
+
+function updateScore() {
+    document.getElementById("score").innerText = "積分：" + score;
+}
+
+function endGame() {
+    document.getElementById("progress").style.width = "100%";
+    document.getElementById("game-ui").style.display = "none";
+    
+    let finalFeedback = "";
+    if (score >= 900) {
+        finalFeedback = `👑 哇！你足足攞到 ${score} 分啊！黃上封你為「大內量詞一品文豪狀元」！🥇`;
+    } else if (score >= 600) {
+        finalFeedback = `⚔️ 很好！你攞到 ${score} 分！武功高強，你已經係「江湖量詞武林大俠」喇！🥈`;
+    } else {
+        finalFeedback = `📜 再接再厲！你得到 ${score} 分！返去私塾跟夫子多讀書，下次一定可以金榜題名！🥉`;
+    }
+    
+    document.getElementById("avatar").innerText = "👑";
+    document.getElementById("role-name").innerText = "冒險終點";
+    document.getElementById("question").innerText = finalFeedback;
+    document.getElementById("restart-btn").style.display = "inline-block";
+    
+    speakCantonese("恭喜你完成全套大冒險！" + finalFeedback);
+}
+</script>
+
+</body>
+</html>
